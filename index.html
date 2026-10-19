@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="일정과 관련 링크를 한곳에서 관리하는 월간 일정 웹앱" />
+    <title>이어달력</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23385a43'/%3E%3Cpath d='M18 26h28v22H18z' fill='%23fffefa'/%3E%3Cpath d='M18 31h28M25 18v12M39 18v12' stroke='%23fffefa' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='27' cy='39' r='3' fill='%23df775f'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">CALENDAR TO ACTION</p>
+          <h1>이어달력</h1>
+          <p class="tagline">기억해 둔 일정을, 바로 다음 행동으로.</p>
+        </div>
+        <div class="month-controls" aria-label="월 이동">
+          <button class="icon-button" id="prev-month" type="button" aria-label="이전 달">←</button>
+          <h2 id="current-month" aria-live="polite"></h2>
+          <button class="icon-button" id="next-month" type="button" aria-label="다음 달">→</button>
+        </div>
+      </header>
+
+      <section class="workspace" aria-label="월간 일정 관리">
+        <section class="calendar-card card" aria-labelledby="current-month">
+          <div class="weekday-row" aria-hidden="true">
+            <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+          </div>
+          <div id="calendar-grid" class="calendar-grid" role="grid" aria-label="월간 달력"></div>
+        </section>
+
+        <aside class="side-panel">
+          <section class="card day-card" aria-labelledby="selected-date-heading">
+            <div class="section-heading">
+              <div>
+                <p class="section-kicker">선택한 날짜</p>
+                <h2 id="selected-date-heading"></h2>
+              </div>
+              <span id="event-count" class="count-badge"></span>
+            </div>
+            <div id="day-events" class="event-list" aria-live="polite"></div>
+          </section>
+
+          <section class="card form-card" aria-labelledby="form-heading">
+            <div class="section-heading">
+              <div>
+                <p class="section-kicker">새 일정</p>
+                <h2 id="form-heading">할 일을 이어 두세요</h2>
+              </div>
+            </div>
+            <form id="event-form" novalidate>
+              <div class="field full-field">
+                <label for="event-title">제목 <span aria-hidden="true">*</span></label>
+                <input id="event-title" name="title" type="text" maxlength="60" placeholder="예: 중간 발표 자료 제출" required />
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="event-date">날짜 <span aria-hidden="true">*</span></label>
+                  <input id="event-date" name="date" type="date" required />
+                </div>
+                <div class="field">
+                  <label for="event-type">유형 <span aria-hidden="true">*</span></label>
+                  <select id="event-type" name="type" required>
+                    <option value="assignment">과제</option>
+                    <option value="appointment">약속</option>
+                    <option value="personal">개인</option>
+                    <option value="other">기타</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field full-field">
+                <label for="event-link">관련 링크 <span class="optional">선택</span></label>
+                <input id="event-link" name="link" type="url" inputmode="url" placeholder="https://example.com" />
+              </div>
+              <div class="field full-field">
+                <label for="event-memo">메모 <span class="optional">선택</span></label>
+                <textarea id="event-memo" name="memo" rows="3" maxlength="200" placeholder="준비할 내용이나 짧은 메모"></textarea>
+              </div>
+              <p id="form-message" class="form-message" role="alert"></p>
+              <button class="primary-button" type="submit">일정 등록하기</button>
+            </form>
+          </section>
+        </aside>
+      </section>
+
+      <section class="card weekly-card" aria-labelledby="weekly-heading">
+        <div class="section-heading weekly-heading-row">
+          <div>
+            <p class="section-kicker">THIS WEEK</p>
+            <h2 id="weekly-heading">이번 주 일정</h2>
+          </div>
+          <p id="week-range" class="week-range"></p>
+        </div>
+        <div id="weekly-grid" class="weekly-grid"></div>
+      </section>
+
+      <footer>일정은 이 브라우저에만 저장됩니다.</footer>
+    </main>
+  </body>
+</html>

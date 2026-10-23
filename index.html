@@ -17,10 +17,13 @@
           <h1>이어달력</h1>
           <p class="tagline">기억해 둔 일정을, 바로 다음 행동으로.</p>
         </div>
-        <div class="month-controls" aria-label="월 이동">
-          <button class="icon-button" id="prev-month" type="button" aria-label="이전 달">←</button>
-          <h2 id="current-month" aria-live="polite"></h2>
-          <button class="icon-button" id="next-month" type="button" aria-label="다음 달">→</button>
+        <div class="header-actions">
+          <a class="widget-link" href="widget.html">주간 위젯</a>
+          <div class="month-controls" aria-label="월 이동">
+            <button class="icon-button" id="prev-month" type="button" aria-label="이전 달">←</button>
+            <h2 id="current-month" aria-live="polite"></h2>
+            <button class="icon-button" id="next-month" type="button" aria-label="다음 달">→</button>
+          </div>
         </div>
       </header>
 
@@ -47,7 +50,7 @@
           <section class="card form-card" aria-labelledby="form-heading">
             <div class="section-heading">
               <div>
-                <p class="section-kicker">새 일정</p>
+                <p class="section-kicker" id="form-kicker">새 일정</p>
                 <h2 id="form-heading">할 일을 이어 두세요</h2>
               </div>
             </div>
@@ -72,15 +75,19 @@
                 </div>
               </div>
               <div class="field full-field">
-                <label for="event-link">관련 링크 <span class="optional">선택</span></label>
-                <input id="event-link" name="link" type="url" inputmode="url" placeholder="https://example.com" />
+                <label>관련 링크 <span class="optional">선택 · 여러 개 가능</span></label>
+                <div id="event-links" class="link-fields"></div>
+                <button class="add-link-button" id="add-link" type="button">+ 링크 추가</button>
               </div>
               <div class="field full-field">
                 <label for="event-memo">메모 <span class="optional">선택</span></label>
                 <textarea id="event-memo" name="memo" rows="3" maxlength="200" placeholder="준비할 내용이나 짧은 메모"></textarea>
               </div>
               <p id="form-message" class="form-message" role="alert"></p>
-              <button class="primary-button" type="submit">일정 등록하기</button>
+              <div class="form-actions">
+                <button class="primary-button" id="submit-button" type="submit">일정 등록하기</button>
+                <button class="secondary-button" id="cancel-edit" type="button" hidden>수정 취소</button>
+              </div>
             </form>
           </section>
         </aside>

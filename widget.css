@@ -1,0 +1,218 @@
+:root {
+  --bg: #f3f1eb;
+  --surface: #fffefa;
+  --ink: #20251f;
+  --muted: #777a72;
+  --line: #e4e1d8;
+  --accent: #385a43;
+  --accent-soft: #e4eee5;
+  --assignment: #df775f;
+  --assignment-soft: #f9e5df;
+  --appointment: #4d83a8;
+  --appointment-soft: #e0edf5;
+  --personal: #8067aa;
+  --personal-soft: #ebe5f4;
+  --other: #a9853b;
+  --other-soft: #f4ebd5;
+  color-scheme: light;
+  font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  padding: clamp(12px, 2.2vw, 28px);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+a { color: inherit; }
+
+.widget-shell {
+  width: min(100%, 1320px);
+  margin: 0 auto;
+  padding: clamp(24px, 3vw, 38px);
+  border: 1px solid var(--line);
+  border-radius: 34px;
+  background: var(--surface);
+  box-shadow: 0 18px 46px rgba(50, 51, 44, .08);
+}
+
+.widget-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 14px;
+  color: var(--accent);
+  font-size: .78rem;
+  font-weight: 900;
+  letter-spacing: .16em;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.55rem, 2.4vw, 2.1rem);
+  letter-spacing: -.045em;
+}
+
+.header-side {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.week-range {
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(.84rem, 1.2vw, 1rem);
+  white-space: nowrap;
+}
+
+.calendar-link {
+  padding: 9px 11px;
+  border-radius: 10px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-size: .74rem;
+  font-weight: 850;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.calendar-link:hover,
+.calendar-link:focus-visible { outline: 2px solid var(--accent); }
+
+.week-section {
+  margin-top: 30px;
+  overflow-x: auto;
+  padding-bottom: 3px;
+}
+
+.week-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(138px, 1fr));
+  gap: 12px;
+  min-width: 980px;
+  align-items: stretch;
+}
+
+.day-card {
+  min-width: 0;
+  min-height: 112px;
+  max-height: 210px;
+  padding: 17px 14px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fbfaf6;
+}
+
+.day-card.today {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.day-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.day-name {
+  font-size: .9rem;
+  font-weight: 900;
+}
+
+.day-date {
+  color: var(--muted);
+  font-size: .78rem;
+  white-space: nowrap;
+}
+
+.day-events {
+  display: grid;
+  gap: 7px;
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 3px;
+  scrollbar-color: rgba(56, 90, 67, .34) transparent;
+  scrollbar-width: thin;
+}
+
+.empty-state {
+  margin: 5px 0 0;
+  color: #aaa9a1;
+  font-size: .78rem;
+}
+
+.event-item {
+  padding: 8px 9px;
+  border-left: 3px solid var(--assignment);
+  border-radius: 9px;
+  background: var(--assignment-soft);
+}
+
+.event-item.type-appointment { border-color: var(--appointment); background: var(--appointment-soft); }
+.event-item.type-personal { border-color: var(--personal); background: var(--personal-soft); }
+.event-item.type-other { border-color: var(--other); background: var(--other-soft); }
+
+.event-title {
+  display: block;
+  overflow: hidden;
+  margin: 0;
+  color: var(--ink);
+  font-size: .76rem;
+  font-weight: 850;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+a.event-title {
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+a.event-title:hover,
+a.event-title:focus-visible { color: var(--accent); }
+
+.event-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.event-links a {
+  padding: 3px 5px;
+  border-radius: 6px;
+  color: var(--accent);
+  background: rgba(255,255,255,.72);
+  font-size: .62rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  body { padding: 10px; }
+  .widget-shell { padding: 22px 18px; border-radius: 24px; }
+  .widget-header { align-items: flex-start; flex-direction: column; gap: 14px; }
+  .header-side { width: 100%; justify-content: space-between; }
+  .week-section { margin-top: 22px; }
+  .week-days { grid-template-columns: repeat(7, 150px); min-width: max-content; }
+  .day-card { max-height: 190px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a { transition: color 150ms ease, background-color 150ms ease; }
+}

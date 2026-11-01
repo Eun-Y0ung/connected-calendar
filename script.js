@@ -28,6 +28,7 @@ let viewedMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 let selectedDate = today;
 let events = loadEvents();
 let editingEventId = null;
+let draggedEventId = null;
 
 function startOfDay(date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -122,6 +123,7 @@ function renderCalendar() {
     const dayButton = document.createElement("button");
     dayButton.type = "button";
     dayButton.className = "calendar-day";
+    dayButton.dataset.date = dateKey(cellDate);
     dayButton.setAttribute("role", "gridcell");
     dayButton.setAttribute("aria-label", `${formatFullDate(cellDate)} 선택`);
 
@@ -145,6 +147,13 @@ function renderCalendar() {
         const chip = document.createElement("span");
         chip.className = `event-chip type-${event.type}`;
         chip.textContent = event.title;
+        chip.draggable = true;
+        chip.dataset.eventId = event.id;
+        chip.title = `“${event.title}” 일정을 다른 날짜로 이동`;
+        chip.setAttribute("aria-label", `${event.title} 일정. 다른 날짜로 끌어 이동할 수 있습니다.`);
+        chip.addEventListener("dragstart", handleEventDragStart);
+        chip.addEventListener("dragend", handleEventDragEnd);
+        chip.addEventListener("click", (event) => event.stopPropagation());
         chips.append(chip);
       });
       if (cellEvents.length > 2) {
@@ -156,9 +165,70 @@ function renderCalendar() {
       dayButton.append(chips);
     }
 
+    dayButton.addEventListener("dragenter", handleDayDragEnter);
+    dayButton.addEventListener("dragover", handleDayDragOver);
+    dayButton.addEventListener("dragleave", handleDayDragLeave);
+    dayButton.addEventListener("drop", handleDayDrop);
     dayButton.addEventListener("click", () => selectDate(cellDate));
     calendarGrid.append(dayButton);
   }
+}
+
+function handleEventDragStart(event) {
+  draggedEventId = event.currentTarget.dataset.eventId;
+  event.currentTarget.classList.add("dragging");
+  event.dataTransfer.effectAllowed = "move";
+  event.dataTransfer.setData("text/plain", draggedEventId);
+}
+
+function handleEventDragEnd(event) {
+  event.currentTarget.classList.remove("dragging");
+  draggedEventId = null;
+  clearDropTargets();
+}
+
+function handleDayDragEnter(event) {
+  if (!draggedEventId) return;
+  event.preventDefault();
+  event.currentTarget.classList.add("drop-target");
+}
+
+function handleDayDragOver(event) {
+  if (!draggedEventId) return;
+  event.preventDefault();
+  event.dataTransfer.dropEffect = "move";
+  event.currentTarget.classList.add("drop-target");
+}
+
+function handleDayDragLeave(event) {
+  if (!event.currentTarget.contains(event.relatedTarget)) {
+    event.currentTarget.classList.remove("drop-target");
+  }
+}
+
+function handleDayDrop(event) {
+  event.preventDefault();
+  const eventId = draggedEventId || event.dataTransfer.getData("text/plain");
+  moveEventToDate(eventId, event.currentTarget.dataset.date);
+}
+
+function clearDropTargets() {
+  calendarGrid.querySelectorAll(".drop-target").forEach((day) => day.classList.remove("drop-target"));
+}
+
+function moveEventToDate(eventId, targetDate) {
+  const target = events.find((event) => event.id === eventId);
+  if (!target || target.date === targetDate) {
+    clearDropTargets();
+    return;
+  }
+
+  target.date = targetDate;
+  if (editingEventId === eventId) eventDateInput.value = targetDate;
+  selectedDate = parseDateKey(targetDate);
+  viewedMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+  saveEvents();
+  renderAll();
 }
 
 function selectDate(date) {

@@ -1,81 +1,22 @@
-const STORAGE_KEY = "connected-calendar-events-v1";
-
-const typeInfo = {
-  assignment: { label: "과제" },
-  appointment: { label: "약속" },
-  personal: { label: "개인" },
-  other: { label: "기타" },
-};
+const { STORAGE_KEY, CATEGORY_KEY, dateKey, loadCategories, loadEvents, eventsOnDate, currentWeekDates } = CalendarData;
+const typeInfo = loadCategories();
 
 const weekRange = document.querySelector("#week-range");
 const weekDays = document.querySelector("#week-days");
 const today = startOfDay(new Date());
-const currentWeek = getCurrentWeekDates();
-const events = loadEvents();
+const currentWeek = currentWeekDates(today);
+const events = loadEvents(typeInfo);
 
 function startOfDay(date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function dateKey(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
 }
 
 function sameDate(a, b) {
   return dateKey(a) === dateKey(b);
 }
 
-function getCurrentWeekDates() {
-  const weekday = today.getDay();
-  const mondayOffset = weekday === 0 ? -6 : 1 - weekday;
-  const monday = new Date(today);
-  monday.setDate(today.getDate() + mondayOffset);
-
-  return Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(monday);
-    date.setDate(monday.getDate() + index);
-    return date;
-  });
-}
-
-function isAllowedUrl(value) {
-  if (!value) return false;
-  try {
-    const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
-}
-
-function loadEvents() {
-  try {
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (!Array.isArray(stored)) return [];
-    return stored
-      .filter((event) => event && typeof event.title === "string" &&
-        /^\d{4}-\d{2}-\d{2}$/.test(event.date) && typeInfo[event.type])
-      .map((event) => {
-        const legacyLink = typeof event.link === "string" && event.link ? [event.link] : [];
-        const links = Array.isArray(event.links) ? event.links : legacyLink;
-        return {
-          ...event,
-          links: links.filter((link) => typeof link === "string" && isAllowedUrl(link)),
-          completed: event.completed === true,
-        };
-      });
-  } catch (error) {
-    console.warn("저장된 일정을 불러오지 못했습니다.", error);
-    return [];
-  }
-}
-
 function getEventsForDate(date) {
-  const key = dateKey(date);
-  return events.filter((event) => event.date === key && !event.completed);
+  return eventsOnDate(events, date, false);
 }
 
 function formatWeekRange() {
@@ -86,7 +27,8 @@ function formatWeekRange() {
 
 function createEventItem(event) {
   const item = document.createElement("div");
-  item.className = `event-item type-${event.type}`;
+  item.className = "event-item";
+  item.style.setProperty("--category-color", typeInfo[event.type].color);
 
   const title = event.links.length ? document.createElement("a") : document.createElement("p");
   title.className = "event-title";
@@ -99,16 +41,23 @@ function createEventItem(event) {
   }
   item.append(title);
 
+  if (event.time) {
+    const time = document.createElement("span");
+    time.className = "event-time";
+    time.textContent = event.time;
+    item.append(time);
+  }
+
   if (event.links.length > 1) {
     const links = document.createElement("div");
     links.className = "event-links";
-    event.links.forEach((url, index) => {
+    event.links.slice(1).forEach((url, index) => {
       const link = document.createElement("a");
       link.href = url;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
-      link.textContent = `${index + 1}`;
-      link.setAttribute("aria-label", `${event.title} 관련 링크 ${index + 1} 열기`);
+      link.textContent = `${index + 2}`;
+      link.setAttribute("aria-label", `${event.title} 관련 링크 ${index + 2} 열기`);
       links.append(link);
     });
     item.append(links);
@@ -154,7 +103,7 @@ function render() {
 }
 
 window.addEventListener("storage", (event) => {
-  if (event.key === STORAGE_KEY) window.location.reload();
+  if (event.key === STORAGE_KEY || event.key === CATEGORY_KEY) window.location.reload();
 });
 
 render();
